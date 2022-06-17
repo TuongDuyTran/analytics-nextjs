@@ -1,8 +1,26 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+
+import * as ga from '../lib/google-analytics'
+import Link from 'next/link'
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      ga.pageview(url);
+    }
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    }
+  }, [router.events])
+
   return (
     <div className={styles.container}>
       <Head>
@@ -15,6 +33,9 @@ export default function Home() {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+
+        <Link href="/about"><a>Go to about page</a></Link>
+        <Link href="/contact"><a>Go to contact page</a></Link>
 
         <p className={styles.description}>
           Get started by editing{' '}
